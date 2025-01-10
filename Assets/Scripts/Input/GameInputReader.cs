@@ -13,11 +13,12 @@ public class GameInputReader : ScriptableObject, GameInput.IPlayerActions, GameI
     public event Action<Vector2> LookInputHasChanged;
     public event Action JumpIsPerformed;
     public event Action JumpIsCanceled;
-    public event Action<bool> SprintIsTriggered;
-    public event Action PauseIsTriggered;
+    public event Action <bool> SprintIsTriggered;
+    public event Action <bool> PauseIsTriggered;
+    public event Action AttackIsPerformed;
+    public event Action AttackIsCanceled;
 
     // UI Actions
-
     [SerializeField]
     private InputActionMap _defaultActionMap;
 
@@ -133,7 +134,10 @@ public class GameInputReader : ScriptableObject, GameInput.IPlayerActions, GameI
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        //throw new NotImplementedException();
+        if(AttackIsPerformed is not null && context.phase == InputActionPhase.Performed)
+            AttackIsPerformed.Invoke();
+        if (AttackIsCanceled is not null && context.phase == InputActionPhase.Canceled)
+            AttackIsCanceled.Invoke();
     }
 
     public void OnInteract(InputAction.CallbackContext context)
@@ -148,13 +152,13 @@ public class GameInputReader : ScriptableObject, GameInput.IPlayerActions, GameI
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (JumpIsPerformed != null && context.performed)
+        if (JumpIsPerformed is not null && context.phase == InputActionPhase.Performed)
         {
             JumpIsPerformed?.Invoke();
             _jumpIsTriggered = true;
         }
 
-        if (JumpIsCanceled != null && context.canceled)
+        if (JumpIsCanceled is not null && context.phase == InputActionPhase.Canceled)
         {
             JumpIsCanceled?.Invoke();
             _jumpIsTriggered = false;
@@ -173,13 +177,13 @@ public class GameInputReader : ScriptableObject, GameInput.IPlayerActions, GameI
 
     public void OnSprint(InputAction.CallbackContext context)
     {
-        if (SprintIsTriggered != null && context.performed)
+        if (SprintIsTriggered is not null && context.performed)
         {
             SprintIsTriggered?.Invoke(true);
             _sprintIsTriggered = true;
         }
 
-        if (SprintIsTriggered != null && context.canceled)
+        if (SprintIsTriggered is not null && context.canceled)
         {
             SprintIsTriggered?.Invoke(false);
             _sprintIsTriggered = false;
@@ -188,8 +192,10 @@ public class GameInputReader : ScriptableObject, GameInput.IPlayerActions, GameI
 
     public void OnPause(InputAction.CallbackContext context)
     {
-        if (PauseIsTriggered is not null && context.performed)
-            PauseIsTriggered.Invoke();
+        if (PauseIsTriggered is not null && context.phase == InputActionPhase.Performed)
+            PauseIsTriggered.Invoke(true);
+        if (PauseIsTriggered is not null && context.phase == InputActionPhase.Canceled)
+            PauseIsTriggered.Invoke(false);
     }
     #endregion
 
