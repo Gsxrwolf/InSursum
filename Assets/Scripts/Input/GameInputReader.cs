@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
@@ -89,8 +87,22 @@ public class GameInputReader : ScriptableObject, GameInput.IPlayerActions, GameI
                 break;
             }
         }
-
         Debug.LogErrorFormat($"Cannot find action map '{actionMapName}' in '{_gameInput.asset.name}'.", this);
+    }
+
+    public void SwitchCurrentActionMap(Guid actionMapID)
+    {
+        foreach (var actionMap in _actionMaps)
+        {
+            if (actionMap.id == actionMapID && _currentActionMap.id != actionMapID)
+            {
+                _currentActionMap.Disable();
+                actionMap.Enable();
+                _currentActionMap = actionMap;
+                break;
+            }
+        }
+        Debug.LogErrorFormat($"Cannot find action map '{actionMapID}' in '{_gameInput.asset.name}'.", this);
     }
 
     public void DisableAllActionMaps()
@@ -152,7 +164,7 @@ public class GameInputReader : ScriptableObject, GameInput.IPlayerActions, GameI
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (JumpIsPerformed is not null && context.phase == InputActionPhase.Performed)
+        if (JumpIsPerformed is not null && context.phase == InputActionPhase.Started)
         {
             JumpIsPerformed?.Invoke();
             _jumpIsTriggered = true;
