@@ -23,7 +23,7 @@ public class PCJump : MonoBehaviour
 
     private void OnEnable()
     {
-        _gameInput.JumpIsPerformed += OnJumpIsPerformed;
+        _gameInput.JumpIsStarted += OnJumpIsPerformed;
         _gameInput.JumpIsCanceled += OnJumpIsCanceled;
     }
 
@@ -38,10 +38,9 @@ public class PCJump : MonoBehaviour
             Jump();
     }
 
-
     private void OnDisable()
     {
-        _gameInput.JumpIsPerformed -= OnJumpIsPerformed;
+        _gameInput.JumpIsStarted -= OnJumpIsPerformed;
         _gameInput.JumpIsCanceled -= OnJumpIsCanceled;
     }
 
