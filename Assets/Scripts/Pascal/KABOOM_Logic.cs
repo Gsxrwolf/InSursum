@@ -28,7 +28,6 @@ public class KABOOM_Logic : MonoBehaviour
     }
     private void MachBoom()
     {
-        temp.constraints = RigidbodyConstraints.None;
         
         temp.AddExplosionForce(powerHEHE, transform.position, 10f);
 
